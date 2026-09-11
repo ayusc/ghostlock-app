@@ -12,7 +12,7 @@ OFFSETS_ENTRY(
     .off_security_hook_heads = 0x015cbef8,
     .off_slide_nfulnl_logger = 0x020029c8,
     .off_slide_boot_id = 0x0226a498,
-    .off_slide_loggers_0_1 = 0x02002918,
+    .off_slide_loggers_0_1 = 0x02002910,
 ),
 
 /* BTF reference (runtime uses target.h defaults): */
