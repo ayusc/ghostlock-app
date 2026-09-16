@@ -101,7 +101,7 @@ data class GhostlockUiState(
     val cpuPairLabels: List<String> = emptyList(),
     val cpuPairIndex: Int = 0,
     val safeModeEnabled: Boolean = false,
-    val tcpRouteEnabled: Boolean = true,
+    val tcpRouteEnabled: Boolean = false,
     val compact: Boolean = false,
     val executionSheetVisible: Boolean = false,
     val executionSheetDismissible: Boolean = false,
