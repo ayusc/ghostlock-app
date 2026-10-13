@@ -50,6 +50,7 @@ int main(int argc, char **argv) {
                 status_record = true;
             } else if (std::string_view(argv[i]) == "--enable-soft-restart") {
                 soft_restart = true;
+                setenv("GHOSTLOCK_SOFT_RESTART", "1", 1);
             } else if (std::string_view(argv[i]) == "--load-prebuilt-profile" && i + 1 < argc) {
                 prebuilt_path = argv[++i];
             } else if (std::string_view(argv[i]) == "--dump-kernel-log" && i + 1 < argc) {
