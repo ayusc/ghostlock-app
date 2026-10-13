@@ -842,18 +842,13 @@ class GhostlockViewModel(
         viewModelScope.launch { refreshSnapshot() }
     }
     
+    /* Keeping the Soft restart toggle enabled by default. */
+    /* Let the user turn it off manually if not needed. */
     fun toggleSoftRestart(enabled: Boolean) {
         repository.setSoftRestartEnabled(enabled)
         mutableState.update { it.copy(softRestartEnabled = enabled) }
     }
     
-    /* Keeping the Soft restart toggle enabled by default. */
-    /* Let the user turn it off manually if not needed. */
-    
-    fun toggleSoftRestart(enabled: Boolean) {
-        mutableState.update { it.copy(softRestartEnabled = enabled) }
-    }
-
     fun onRun() = runExploit()
 
     /** Explains why the run button is greyed out. */
