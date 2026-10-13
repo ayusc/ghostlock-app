@@ -922,19 +922,13 @@ class GhostlockViewModel(
     }
 
     private fun performSoftRestart() {
-        val cmd = "setprop ctl.restart zygote || killall -9 zygote zygote64 || svc power reboot userspace"
+        // Attempt a clean Android 11+ userspace reboot, falling back to a runtime restart.
+        val cmd = "svc power reboot userspace || (stop && start)"
         try {
+            // Since the exploit succeeded (code == 0), 'su' is available and handles this universally.
             Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
-        } catch (_: Exception) {
-            try {
-                if (state.value.shizukuEnabled && rikka.shizuku.Shizuku.pingBinder()) {
-                    rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
-                } else {
-                    Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
-                }
-            } catch (_: Exception) {
-                appendLog("error: failed to perform soft restart")
-            }
+        } catch (e: Exception) {
+            appendLog("error: failed to perform soft restart (${e.message})")
         }
     }
 
