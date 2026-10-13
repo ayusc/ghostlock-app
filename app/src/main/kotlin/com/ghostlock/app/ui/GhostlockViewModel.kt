@@ -842,6 +842,11 @@ class GhostlockViewModel(
         viewModelScope.launch { refreshSnapshot() }
     }
     
+    fun toggleSoftRestart(enabled: Boolean) {
+        repository.setSoftRestartEnabled(enabled)
+        mutableState.update { it.copy(softRestartEnabled = enabled) }
+    }
+    
     /* Keeping the Soft restart toggle enabled by default. */
     /* Let the user turn it off manually if not needed. */
     

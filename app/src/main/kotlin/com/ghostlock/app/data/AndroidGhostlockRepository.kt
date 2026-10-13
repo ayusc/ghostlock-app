@@ -97,6 +97,7 @@ class AndroidGhostlockRepository(context: Context) : GhostlockRepository {
     private var shizukuPreferenceSet = false
     private var pendingParsedDocument: PendingParsedDocument? = null
     private val shizukuRunner = ShizukuExploitRunner(appContext)
+    private var softRestartEnabled = true
 
     init {
         buildCpuPairs()
@@ -105,6 +106,12 @@ class AndroidGhostlockRepository(context: Context) : GhostlockRepository {
         restoreForceAttackTest()
         dropLegacyOffsetsCache()
         migrateLegacyOffsetsStore()
+        softRestartEnabled = preferences.getBoolean("soft_restart_enabled", true)
+    }
+
+    override fun setSoftRestartEnabled(enabled: Boolean) {
+        softRestartEnabled = enabled
+        preferences.edit { putBoolean("soft_restart_enabled", enabled) }
     }
 
     /** The old JSON offsets cache is not compatible and is discarded. */
@@ -635,16 +642,19 @@ class AndroidGhostlockRepository(context: Context) : GhostlockRepository {
                 start()
             }
             val argv = mutableListOf(
-                binary.absolutePath,
-                "--ghostlock-app-call",
-                "--enable-status-record",
-            )
-            if (forceAttackTest) {
-                argv += "--force-attack"
-            }
-            if (!debugDir.isNullOrEmpty()) {
-                argv += listOf("--dump-kernel-log", debugDir)
-            }
+                 binary.absolutePath,
+                 "--ghostlock-app-call",
+                 "--enable-status-record",
+             )
+             if (forceAttackTest) {
+                 argv += "--force-attack"
+             }
+             if (softRestartEnabled) {
+                 argv += "--enable-soft-restart"
+             }
+             if (!debugDir.isNullOrEmpty()) {
+                 argv += listOf("--dump-kernel-log", debugDir)
+             }
             val command = ProcessBuilder(argv)
                 .directory(workDir)
                 .redirectErrorStream(true)

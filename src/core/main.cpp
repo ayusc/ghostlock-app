@@ -47,13 +47,15 @@ int main(int argc, char **argv) {
                 force_attack = true;
             } else if (std::string_view(argv[i]) == "--enable-status-record") {
                 status_record = true;
-            } else if (std::string_view(argv[i]) == "--load-prebuilt-profile" &&i + 1 < argc) {
+            } else if (std::string_view(argv[i]) == "--enable-soft-restart") {
+                soft_restart = true;
+            } else if (std::string_view(argv[i]) == "--load-prebuilt-profile" && i + 1 < argc) {
                 prebuilt_path = argv[++i];
             } else if (std::string_view(argv[i]) == "--dump-kernel-log" && i + 1 < argc) {
                 dump_dir = argv[++i];
             } else {
                 pr_error("usage: %s [--ghostlock-app-call | --load-prebuilt-profile <bin>]"
-                " [--dump-kernel-log <dir>] [--force-attack] [--enable-status-record]\n", argv[0]);
+                " [--dump-kernel-log <dir>] [--force-attack] [--enable-status-record] [--enable-soft-restart]\n", argv[0]);
                 return 1;
             }
         }
@@ -119,9 +121,10 @@ int main(int argc, char **argv) {
                 return 1;
             case runtime::RunCode::Completed:
             case runtime::RunCode::DiagnosticStop:
-                pr_success("exploit successful; executing native soft restart...\n");
-                // Execute userspace reboot with root/shell privileges natively
-                system("svc power reboot userspace || (stop && start)");
+                if (soft_restart) {
+                    pr_success("exploit successful; executing native soft restart...\n");
+                    system("su -c 'svc power reboot userspace || (stop && start)'");
+                }
                 return 0;
         }
         throw FatalError{};
