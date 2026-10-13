@@ -124,10 +124,13 @@ int main(int argc, char **argv) {
             case runtime::RunCode::DiagnosticStop:
                 if (soft_restart) {
                     pr_success("exploit successful; executing native soft restart...\n");
-                    system("su -c 'svc power reboot userspace || (stop && start)'");
+                    // Try direct system property userspace reboot first, falling back to absolute paths
+                    int rc = system("setprop sys.powerctl reboot,userspace");
+                    if (rc != 0) {
+                        system("/system/bin/reboot userspace || /system/bin/su -c 'svc power reboot userspace || (stop && start)'");
+                    }
                 }
                 return 0;
-        }
         throw FatalError{};
     } catch (const FatalError &) {
         return 1;
