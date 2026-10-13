@@ -123,14 +123,15 @@ int main(int argc, char **argv) {
             case runtime::RunCode::Completed:
             case runtime::RunCode::DiagnosticStop:
                 if (soft_restart) {
-                    pr_success("exploit successful; executing native soft restart...\n");
-                    int rc = system("setprop sys.powerctl reboot,userspace");
-                    if (rc != 0) {
-                        // FIX: Removed the hardcoded /system/bin/ prefix for su and reboot
-                        system("reboot userspace || su -c 'svc power reboot userspace || (stop && start)'");
-                    }
-                }
-                return 0;
+		    // Signal the root script that soft restart was enabled
+		    setenv("GHOSTLOCK_SOFT_RESTART", "1", 1);
+		    const char *home = getenv("GHOSTLOCK_HOME");
+		    if (home) {
+		        std::string flag = std::string(home) + "/.soft_restart";
+		        close(open(flag.c_str(), O_CREAT | O_WRONLY, 0600));
+		    }
+		}
+        	return 0;
         }
         throw FatalError{};
     } catch (const FatalError &) {

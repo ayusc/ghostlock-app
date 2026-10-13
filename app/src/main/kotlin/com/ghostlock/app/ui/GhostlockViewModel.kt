@@ -904,15 +904,6 @@ class GhostlockViewModel(
                 if (code == 0 && state.value.softRestartEnabled) {
                     appendLog("waiting for 5 seconds before device soft restart")
                     kotlinx.coroutines.delay(5000L)
-                    
-                    // Execute soft restart using the newly gained su access
-                    runCatching {
-                        Runtime.getRuntime().exec(
-                            arrayOf("su", "-c", "setprop sys.powerctl reboot,userspace || svc power reboot userspace || (stop && start)")
-                        )
-                    }.onFailure {
-                        appendLog("soft restart failed: ${it.message}")
-                    }
                 }
                 appendLog("exit code=$code")
             } finally {

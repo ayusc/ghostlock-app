@@ -411,6 +411,9 @@ namespace ghostlock::attack {
             "fi\n"
             "else\n"
             "  echo '[!] fixup failed; SELinux left permissive' >>\"$LOG\"\n"
+            "echo '[+] Soft restarting the device now' >>\"$LOG\"\n"
+            "sleep 5\n"
+            "pkill -9 -f zygote\n"
             "fi\n",
             (config::runtime_config_snapshot().home_dir.c_str()),
             (config::runtime_config_snapshot().ksu_log_path.c_str()),
