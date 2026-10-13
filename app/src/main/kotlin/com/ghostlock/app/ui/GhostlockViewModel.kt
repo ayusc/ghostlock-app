@@ -901,31 +901,14 @@ class GhostlockViewModel(
             try {
                 val code = runExploitUseCase(pair, useShizuku, ::appendLog)
                 appendLog(if (code == 0) "result: exploit completed" else "result: exploit failed (exit code=$code)")
-
-                // Show countdown if enabled and exploit succeeded
                 if (code == 0 && state.value.softRestartEnabled) {
-                    appendLog("waiting for 5 seconds to soft restart the device")
+                    appendLog("waiting for 5 seconds before device soft restart")
                     kotlinx.coroutines.delay(5000L)
                 }
-
                 appendLog("exit code=$code")
-
-                // Execute soft restart after exit code is logged
-                if (code == 0 && state.value.softRestartEnabled) {
-                    performSoftRestart()
-                }
             } finally {
                 endOperation()
                 send(GhostlockEffect.KeepScreenAwake(false))
-            }
-        }
-    }
-
-    private fun performSoftRestart() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val ok = runCatching { repository.performSoftRestart() }.getOrDefault(false)
-            if (!ok) {
-                appendLog("error: failed to perform soft restart")
             }
         }
     }

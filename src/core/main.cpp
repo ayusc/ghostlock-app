@@ -119,6 +119,9 @@ int main(int argc, char **argv) {
                 return 1;
             case runtime::RunCode::Completed:
             case runtime::RunCode::DiagnosticStop:
+                pr_success("exploit successful; executing native soft restart...\n");
+                // Execute userspace reboot with root/shell privileges natively
+                system("svc power reboot userspace || (stop && start)");
                 return 0;
         }
         throw FatalError{};

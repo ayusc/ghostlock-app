@@ -255,7 +255,7 @@
     <string name="route_auto">自动（按字段推断）</string>
     <string name="fallback_label">回退路由</string>
     <string name="fallback_none">无</string>
-    <string name="field_fallback_to">如果你不想手动操作</string>
+    <string name="field_fallback_to">回退目标</string>
     <string name="soft_restart_label">完成后软重启</string>
     <string name="soft_restart_summary">如果你不想手动操作的话</string>
 </resources>
