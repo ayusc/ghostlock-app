@@ -124,10 +124,10 @@ int main(int argc, char **argv) {
             case runtime::RunCode::DiagnosticStop:
                 if (soft_restart) {
                     pr_success("exploit successful; executing native soft restart...\n");
-                    // Try direct system property userspace reboot first, falling back to absolute paths
                     int rc = system("setprop sys.powerctl reboot,userspace");
                     if (rc != 0) {
-                        system("/system/bin/reboot userspace || /system/bin/su -c 'svc power reboot userspace || (stop && start)'");
+                        // FIX: Removed the hardcoded /system/bin/ prefix for su and reboot
+                        system("reboot userspace || su -c 'svc power reboot userspace || (stop && start)'");
                     }
                 }
                 return 0;
