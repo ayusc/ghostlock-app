@@ -131,6 +131,7 @@ int main(int argc, char **argv) {
                     }
                 }
                 return 0;
+        }
         throw FatalError{};
     } catch (const FatalError &) {
         return 1;
