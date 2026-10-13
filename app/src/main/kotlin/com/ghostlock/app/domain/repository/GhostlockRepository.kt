@@ -20,6 +20,8 @@ interface GhostlockRepository {
     fun setForceAttackTest(enabled: Boolean)
 
     fun setShizukuEnabled(enabled: Boolean)
+    
+    suspend fun performSoftRestart(): Boolean
 
     /**
      * Imports one or more picked documents (file name -> text). Includes are

@@ -922,16 +922,14 @@ class GhostlockViewModel(
     }
 
     private fun performSoftRestart() {
-        // Attempt a clean Android 11+ userspace reboot, falling back to a runtime restart.
-        val cmd = "svc power reboot userspace || (stop && start)"
-        try {
-            // Since the exploit succeeded (code == 0), 'su' is available and handles this universally.
-            Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
-        } catch (e: Exception) {
-            appendLog("error: failed to perform soft restart (${e.message})")
+        viewModelScope.launch(Dispatchers.IO) {
+            val ok = runCatching { repository.performSoftRestart() }.getOrDefault(false)
+            if (!ok) {
+                appendLog("error: failed to perform soft restart")
+            }
         }
     }
-
+    
     fun onCloseExecutionSheet() {
         if (running && !state.value.executionSheetDismissible) return
         mutableState.update { it.copy(executionSheetVisible = false) }

@@ -441,6 +441,27 @@ class AndroidGhostlockRepository(context: Context) : GhostlockRepository {
             }
         }
     }
+    
+    override suspend fun performSoftRestart(): Boolean = withContext(Dispatchers.IO) {
+        val cmd = "svc power reboot userspace || (stop && start)"
+        val ksudFile = File(filesDir, "ksud")
+        val attempts = listOf(
+            arrayOf(ksudFile.absolutePath, "su", "-c", cmd),
+            arrayOf("su", "-c", cmd)
+        )
+        for (args in attempts) {
+            if (args[0] == ksudFile.absolutePath && !ksudFile.isFile) continue
+            val success = runCatching {
+                val process = ProcessBuilder(*args)
+                    .directory(filesDir)
+                    .redirectErrorStream(true)
+                    .start()
+                process.waitFor() == 0
+            }.getOrDefault(false)
+            if (success) return@withContext true
+        }
+        false
+    }
 
     /* --- attack step status ------------------------------------------------
      * The native process reports each step over stdout and waits for an ACK on
