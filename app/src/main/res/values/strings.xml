@@ -256,4 +256,6 @@
     <string name="fallback_label">Fallback route</string>
     <string name="fallback_none">None</string>
     <string name="field_fallback_to">fallback_to</string>
+    <string name="soft_restart_label">Soft restart after complete</string>
+    <string name="soft_restart_summary">If you dont want to do it manually</string>
 </resources>

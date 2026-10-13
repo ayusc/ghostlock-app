@@ -841,6 +841,13 @@ class GhostlockViewModel(
         // onResume() refreshes it again when the dialog closes.
         viewModelScope.launch { refreshSnapshot() }
     }
+    
+    /* Keeping the Soft restart toggle enabled by default. */
+    /* Let the user turn it off manually if not needed. */
+    
+    fun toggleSoftRestart(enabled: Boolean) {
+        mutableState.update { it.copy(softRestartEnabled = enabled) }
+    }
 
     fun onRun() = runExploit()
 
@@ -894,10 +901,39 @@ class GhostlockViewModel(
             try {
                 val code = runExploitUseCase(pair, useShizuku, ::appendLog)
                 appendLog(if (code == 0) "result: exploit completed" else "result: exploit failed (exit code=$code)")
+
+                // Show countdown if enabled and exploit succeeded
+                if (code == 0 && state.value.softRestartEnabled) {
+                    appendLog("waiting for 5 seconds to soft restart the device")
+                    kotlinx.coroutines.delay(5000L)
+                }
+
                 appendLog("exit code=$code")
+
+                // Execute soft restart after exit code is logged
+                if (code == 0 && state.value.softRestartEnabled) {
+                    performSoftRestart()
+                }
             } finally {
                 endOperation()
                 send(GhostlockEffect.KeepScreenAwake(false))
+            }
+        }
+    }
+
+    private fun performSoftRestart() {
+        val cmd = "setprop ctl.restart zygote || killall -9 zygote zygote64 || svc power reboot userspace"
+        try {
+            Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
+        } catch (_: Exception) {
+            try {
+                if (state.value.shizukuEnabled && rikka.shizuku.Shizuku.pingBinder()) {
+                    rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
+                } else {
+                    Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
+                }
+            } catch (_: Exception) {
+                appendLog("error: failed to perform soft restart")
             }
         }
     }

@@ -98,6 +98,7 @@ data class GhostlockUiState(
     val kernelSupported: Boolean = false,
     val shizukuEnabled: Boolean = false,
     val shizukuStatus: ShizukuStatus = ShizukuStatus.NOT_REQUIRED,
+    val softRestartEnabled: Boolean = true,
     val running: Boolean = false,
     val cpuPairLabels: List<String> = emptyList(),
     val cpuPairIndex: Int = 0,
@@ -184,6 +185,7 @@ interface GhostlockActions {
     fun onSafeModeChanged(enabled: Boolean)
     fun onForceAttackTestChanged(enabled: Boolean)
     fun onShizukuChanged(enabled: Boolean)
+    fun onSoftRestartChanged(enabled: Boolean)
     fun onDialogItemSelected(index: Int)
     fun onDialogInputChange(value: String)
     fun onDialogConfirm(value: String)
@@ -723,6 +725,13 @@ private fun ControlPanel(
                         else -> R.string.shizuku_status_checking
                     },
                 ),
+            )
+            // --- Soft Restart Toggle ---
+            SwitchPreference(
+                checked = state.softRestartEnabled,
+                onCheckedChange = actions::onSoftRestartChanged,
+                title = stringResource(R.string.soft_restart_label),
+                summary = stringResource(R.string.soft_restart_summary),
             )
         }
         Card(modifier = modifier.padding(top = 12.dp)) {

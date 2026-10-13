@@ -187,6 +187,7 @@ private fun GhostlockRoute(
                 viewModel.toggleForceAttackTest(enabled)
 
             override fun onShizukuChanged(enabled: Boolean) = viewModel.toggleShizuku(enabled)
+            override fun onSoftRestartChanged(enabled: Boolean) = viewModel.toggleSoftRestart(enabled)
             override fun onDialogItemSelected(index: Int) = viewModel.onDialogItemSelected(index)
             override fun onDialogInputChange(value: String) = viewModel.onDialogInputChange(value)
             override fun onDialogConfirm(value: String) = viewModel.onDialogConfirm(value)
