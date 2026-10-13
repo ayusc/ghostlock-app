@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
         bool app_call = false;
         bool force_attack = false;
         bool status_record = false;
+        bool soft_restart = false;
         const char *prebuilt_path = nullptr;
         const char *dump_dir = nullptr;
         for (int32_t i = 1; i < argc; i++) {
